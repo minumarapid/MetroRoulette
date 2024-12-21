@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>駅名ルーレット</title>
+    <title>駅名くじ引き</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -20,26 +20,6 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .roulette {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: 20px;
-            width: 300px;
-            height: 50px;
-            border: 2px solid #007bff;
-            border-radius: 25px;
-            overflow: hidden;
-            font-size: 20px;
-            font-weight: bold;
-            color: #007bff;
-        }
-        .roulette-inner {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-evenly;
-            animation: spin 3s linear infinite;
         }
         .result {
             font-size: 24px;
@@ -60,25 +40,12 @@
         button:hover {
             background-color: #0056b3;
         }
-
-        /* アニメーション設定 */
-        @keyframes spin {
-            0% {
-                transform: translateY(0);
-            }
-            100% {
-                transform: translateY(-500%);
-            }
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>駅名ルーレット</h1>
-        <button onclick="startRoulette()">くじを引く</button>
-        <div class="roulette" id="roulette">
-            <div class="roulette-inner" id="roulette-inner"></div>
-        </div>
+        <h1>MetroRoulette</h1>
+        <button onclick="drawLottery()">押す</button>
         <div class="result" id="result"></div>
     </div>
 
@@ -100,21 +67,10 @@
             "四谷三丁目", "代々木上原", "代々木公園", "六本木", "六本木一丁目", "和光市", "早稲田"
         ];
 
-        function startRoulette() {
-            const rouletteInner = document.getElementById('roulette-inner');
-            const resultDiv = document.getElementById('result');
-
-            // ルーレットを回転させる
-            rouletteInner.innerHTML = stations.join('<br>');  // 駅名を表示
-            rouletteInner.style.animation = 'spin 3s linear infinite';
-
-            // ルーレットが止まるアニメーション後にランダムに選択
-            setTimeout(() => {
-                const randomIndex = Math.floor(Math.random() * stations.length);
-                const result = stations[randomIndex];
-                rouletteInner.style.animation = '';  // アニメーションを止める
-                resultDiv.innerText = "当たり: " + result;
-            }, 3000); // 3秒後に結果を表示
+        function drawLottery() {
+            const randomIndex = Math.floor(Math.random() * stations.length);
+            const result = stations[randomIndex];
+            document.getElementById("result").innerText = "行く: " + result;
         }
     </script>
 </body>
