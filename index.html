@@ -36,6 +36,7 @@
             border-radius: 50%;
             position: relative;
             overflow: hidden;
+            transform-origin: center;
         }
         .roulette .options {
             position: absolute;
@@ -45,8 +46,15 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            font-size: 1.5em;
+            font-size: 1.2em;
             color: white;
+            background: conic-gradient(
+                #ff9999 0% 25%, 
+                #99ccff 25% 50%, 
+                #99ff99 50% 75%, 
+                #ffcc99 75% 100%
+            );
+            border-radius: 50%;
         }
         #result {
             font-size: 2em;
@@ -71,7 +79,7 @@
     <br>
     <button onclick="spinRoulette()">ルーレットを回す</button>
 
-    <div class="roulette">
+    <div class="roulette" id="roulette-container">
         <div class="options" id="roulette-wheel">準備中...</div>
     </div>
 
@@ -85,22 +93,33 @@
             const wheel = document.getElementById("roulette-wheel");
 
             if (options.length > 1 && options[0] !== "") {
+                // 選択肢をルーレットにセット（全て表示するのではなく回転で見せる）
+                const sectors = options.length;
+                const colors = ["#ff9999", "#99ccff", "#99ff99", "#ffcc99"];
+                let gradient = "conic-gradient(";
+
+                for (let i = 0; i < sectors; i++) {
+                    const start = (i / sectors) * 100;
+                    const end = ((i + 1) / sectors) * 100;
+                    gradient += `${colors[i % colors.length]} ${start}% ${end}%, `;
+                }
+                gradient = gradient.slice(0, -2) + ")";
+                wheel.style.background = gradient;
+
                 // ランダムな回転角度を生成（3回転 + ランダム）
                 const randomIndex = Math.floor(Math.random() * options.length);
                 const randomAngle = 360 * 3 + (randomIndex * (360 / options.length));
 
                 // アニメーション設定
-                wheel.style.animation = `spin 3s cubic-bezier(0.25, 1, 0.5, 1)`;
-                wheel.style.transform = `rotate(${randomAngle}deg)`;
-
-                // 選択肢を画面に反映
-                wheel.innerText = options.join(" | ");
+                const container = document.getElementById("roulette-container");
+                container.style.transition = "transform 3s cubic-bezier(0.25, 1, 0.5, 1)";
+                container.style.transform = `rotate(${randomAngle}deg)`;
 
                 // アニメーション後に結果を表示
                 setTimeout(() => {
                     resultDiv.innerText = `結果: ${options[randomIndex]}`;
                     resultDiv.style.color = "green";
-                    wheel.style.animation = ""; // アニメーションをリセット
+                    container.style.transition = ""; // アニメーションをリセット
                 }, 3000); // 3秒後に結果表示
             } else {
                 resultDiv.innerText = "複数の選択肢を入力してください！";
