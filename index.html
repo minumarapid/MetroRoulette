@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ルーレットアプリ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #333;
+        }
+        input {
+            font-size: 1em;
+            padding: 5px;
+            width: 80%;
+        }
+        button {
+            font-size: 1em;
+            padding: 10px 20px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #f0f0f0;
+        }
+        #result {
+            font-size: 2em;
+            margin-top: 20px;
+            color: green;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>ルーレットアプリ</h1>
+    <p>選択肢をカンマ (,) で区切って入力してください。</p>
+    <input type="text" id="options" placeholder="例: りんご,バナナ,オレンジ">
+    <br>
+    <button onclick="spinRoulette()">ルーレットを回す</button>
+    <div id="result"></div>
+
+    <script>
+        function spinRoulette() {
+            const input = document.getElementById("options").value;
+            const options = input.split(",").map(option => option.trim());
+            const resultDiv = document.getElementById("result");
+
+            if (options.length > 1 && options[0] !== "") {
+                const randomIndex = Math.floor(Math.random() * options.length);
+
+                // アニメーション効果を追加
+                resultDiv.innerText = "ルーレット中...";
+                resultDiv.style.color = "blue";
+
+                setTimeout(() => {
+                    resultDiv.innerText = `結果: ${options[randomIndex]}`;
+                    resultDiv.style.color = "green";
+                }, 2000); // 2秒後に結果を表示
+            } else {
+                resultDiv.innerText = "複数の選択肢を入力してください！";
+                resultDiv.style.color = "red";
+            }
+        }
+    </script>
+</body>
+</html>
