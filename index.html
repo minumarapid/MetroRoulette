@@ -3,128 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ルーレットアプリ</title>
+    <title>駅名くじ引き</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f9;
+            margin: 0;
+        }
+        .container {
             text-align: center;
-            margin: 50px;
-            background-color: #f9f9f9;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        h1 {
-            color: #333;
-        }
-        input {
-            font-size: 1em;
-            padding: 5px;
-            width: 80%;
+        .result {
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 20px;
+            color: #2d2d2d;
         }
         button {
-            font-size: 1em;
             padding: 10px 20px;
-            margin-top: 10px;
+            font-size: 18px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
+            margin-top: 20px;
         }
         button:hover {
-            background-color: #f0f0f0;
-        }
-        .roulette {
-            margin: 20px auto;
-            width: 200px;
-            height: 200px;
-            border: 5px solid #333;
-            border-radius: 50%;
-            position: relative;
-            overflow: hidden;
-            transform-origin: center;
-        }
-        .roulette .options {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            font-size: 1.2em;
-            color: white;
-            background: conic-gradient(
-                #ff9999 0% 25%, 
-                #99ccff 25% 50%, 
-                #99ff99 50% 75%, 
-                #ffcc99 75% 100%
-            );
-            border-radius: 50%;
-        }
-        #result {
-            font-size: 2em;
-            margin-top: 20px;
-            color: green;
-            font-weight: bold;
-        }
-        @keyframes spin {
-            from {
-                transform: rotate(0deg);
-            }
-            to {
-                transform: rotate(360deg);
-            }
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
-    <h1>ルーレットアプリ</h1>
-    <p>選択肢をカンマ (,) で区切って入力してください。</p>
-    <input type="text" id="options" placeholder="例: りんご,バナナ,オレンジ">
-    <br>
-    <button onclick="spinRoulette()">ルーレットを回す</button>
-
-    <div class="roulette" id="roulette-container">
-        <div class="options" id="roulette-wheel">準備中...</div>
+    <div class="container">
+        <h1>駅名くじ引き</h1>
+        <button onclick="drawLottery()">くじを引く</button>
+        <div class="result" id="result"></div>
     </div>
 
-    <div id="result"></div>
-
     <script>
-        function spinRoulette() {
-            const input = document.getElementById("options").value;
-            const options = input.split(",").map(option => option.trim());
-            const resultDiv = document.getElementById("result");
-            const wheel = document.getElementById("roulette-wheel");
+        const stations = [
+            "青山一丁目", "赤坂", "赤坂見附", "赤羽岩淵", "秋葉原", "浅草", "麻布十番", "綾瀬", "淡路町", "飯田橋", "池袋", 
+            "市ケ谷", "稲荷町", "入谷", "上野", "上野広小路", "浦安", "江戸川橋", "恵比寿", "王子", "王子神谷", "大手町", 
+            "荻窪", "押上〈スカイツリー前〉", "落合", "御茶ノ水", "表参道", "神楽坂", "葛西", "霞ケ関", "要町", "神谷町", 
+            "茅場町", "神田", "外苑前", "北綾瀬", "北参道", "北千住", "木場", "京橋", "清澄白河", "錦糸町", "行徳", "銀座", 
+            "銀座一丁目", "九段下", "麴町", "後楽園", "小竹向原", "国会議事堂前", "小伝馬町", "駒込", "護国寺", "桜田門", 
+            "渋谷", "志茂", "白金高輪", "白金台", "新大塚", "新御茶ノ水", "新木場", "新高円寺", "新宿", "新宿御苑前", 
+            "新宿三丁目", "新富町", "新中野", "新橋", "神保町", "水天宮前", "末広町", "住吉", "千川", "千駄木", "雑司が谷", 
+            "高田馬場", "竹橋", "辰巳", "溜池山王", "田原町", "地下鉄赤塚", "地下鉄成増", "月島", "築地", "東京", "東大前", 
+            "東陽町", "豊洲", "虎ノ門", "虎ノ門ヒルズ", "仲御徒町", "中野", "中野坂上", "中野新橋", "中野富士見町", "中目黒", 
+            "永田町", "西葛西", "西ケ原", "西新宿", "西日暮里", "西船橋", "西早稲田", "二重橋前〈丸の内〉", "日本橋", 
+            "人形町", "根津", "乃木坂", "八丁堀", "半蔵門", "原木中山", "氷川台", "東池袋", "東銀座", "東高円寺", "東新宿", 
+            "日比谷", "広尾", "平和台", "方南町", "本駒込", "本郷三丁目", "町屋", "三越前", "南阿佐ケ谷", "南行徳", "南砂町", 
+            "南千住", "三ノ輪", "茗荷谷", "妙典", "明治神宮前〈原宿〉", "目黒", "門前仲町", "有楽町", "湯島", "四ツ谷", 
+            "四谷三丁目", "代々木上原", "代々木公園", "六本木", "六本木一丁目", "和光市", "早稲田"
+        ];
 
-            if (options.length > 1 && options[0] !== "") {
-                // 選択肢をルーレットにセット（全て表示するのではなく回転で見せる）
-                const sectors = options.length;
-                const colors = ["#ff9999", "#99ccff", "#99ff99", "#ffcc99"];
-                let gradient = "conic-gradient(";
-
-                for (let i = 0; i < sectors; i++) {
-                    const start = (i / sectors) * 100;
-                    const end = ((i + 1) / sectors) * 100;
-                    gradient += `${colors[i % colors.length]} ${start}% ${end}%, `;
-                }
-                gradient = gradient.slice(0, -2) + ")";
-                wheel.style.background = gradient;
-
-                // ランダムな回転角度を生成（3回転 + ランダム）
-                const randomIndex = Math.floor(Math.random() * options.length);
-                const randomAngle = 360 * 3 + (randomIndex * (360 / options.length));
-
-                // アニメーション設定
-                const container = document.getElementById("roulette-container");
-                container.style.transition = "transform 3s cubic-bezier(0.25, 1, 0.5, 1)";
-                container.style.transform = `rotate(${randomAngle}deg)`;
-
-                // アニメーション後に結果を表示
-                setTimeout(() => {
-                    resultDiv.innerText = `結果: ${options[randomIndex]}`;
-                    resultDiv.style.color = "green";
-                    container.style.transition = ""; // アニメーションをリセット
-                }, 3000); // 3秒後に結果表示
-            } else {
-                resultDiv.innerText = "複数の選択肢を入力してください！";
-                resultDiv.style.color = "red";
-            }
+        function drawLottery() {
+            const randomIndex = Math.floor(Math.random() * stations.length);
+            const result = stations[randomIndex];
+            document.getElementById("result").innerText = "当たり: " + result;
         }
     </script>
 </body>
