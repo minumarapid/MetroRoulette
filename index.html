@@ -28,11 +28,39 @@
         button:hover {
             background-color: #f0f0f0;
         }
+        .roulette {
+            margin: 20px auto;
+            width: 200px;
+            height: 200px;
+            border: 5px solid #333;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+        }
+        .roulette .options {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 1.5em;
+            color: white;
+        }
         #result {
             font-size: 2em;
             margin-top: 20px;
             color: green;
             font-weight: bold;
+        }
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
@@ -42,6 +70,11 @@
     <input type="text" id="options" placeholder="例: りんご,バナナ,オレンジ">
     <br>
     <button onclick="spinRoulette()">ルーレットを回す</button>
+
+    <div class="roulette">
+        <div class="options" id="roulette-wheel">準備中...</div>
+    </div>
+
     <div id="result"></div>
 
     <script>
@@ -49,18 +82,26 @@
             const input = document.getElementById("options").value;
             const options = input.split(",").map(option => option.trim());
             const resultDiv = document.getElementById("result");
+            const wheel = document.getElementById("roulette-wheel");
 
             if (options.length > 1 && options[0] !== "") {
+                // ランダムな回転角度を生成（3回転 + ランダム）
                 const randomIndex = Math.floor(Math.random() * options.length);
+                const randomAngle = 360 * 3 + (randomIndex * (360 / options.length));
 
-                // アニメーション効果を追加
-                resultDiv.innerText = "ルーレット中...";
-                resultDiv.style.color = "blue";
+                // アニメーション設定
+                wheel.style.animation = `spin 3s cubic-bezier(0.25, 1, 0.5, 1)`;
+                wheel.style.transform = `rotate(${randomAngle}deg)`;
 
+                // 選択肢を画面に反映
+                wheel.innerText = options.join(" | ");
+
+                // アニメーション後に結果を表示
                 setTimeout(() => {
                     resultDiv.innerText = `結果: ${options[randomIndex]}`;
                     resultDiv.style.color = "green";
-                }, 2000); // 2秒後に結果を表示
+                    wheel.style.animation = ""; // アニメーションをリセット
+                }, 3000); // 3秒後に結果表示
             } else {
                 resultDiv.innerText = "複数の選択肢を入力してください！";
                 resultDiv.style.color = "red";
